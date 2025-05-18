@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"golang.org/x/net/html"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -13,6 +12,8 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"golang.org/x/net/html"
 )
 
 const (
@@ -574,6 +575,49 @@ func (c *Client) ExportNotes(ctx context.Context, startDate time.Time, endDate t
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", fmt.Errorf("failed to read body of notes export response: %s", err)
+	}
+
+	return string(body), nil
+}
+
+// ExportFasts exports the fasts within the date range. Only the YYYY-mm-dd is utilized of startDate and
+// endDate. The export is the raw string data.
+func (c *Client) ExportFasts(ctx context.Context, startDate time.Time, endDate time.Time) (string, error) {
+	// Generating the required token.
+	token, err := c.GenerateAuthToken(ctx)
+	if err != nil {
+		return "", fmt.Errorf("failed to get token to make request: %s", err)
+	}
+
+	// Building the request.
+	req, err := c.NewExportRequest(ctx, "GET", APIExportURL, nil)
+	if err != nil {
+		return "", fmt.Errorf("failed while building http request for fasts export: %s", err)
+	}
+
+	q := req.URL.Query()
+	q.Add("nonce", token)
+	q.Add("generate", "fasts")
+	q.Add("start", startDate.Format("2006-01-02"))
+	q.Add("end", endDate.Format("2006-01-02"))
+	req.URL.RawQuery = q.Encode()
+
+	// Executing the request.
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("failed while executing http request for fasts export: %s", err)
+	}
+	//noinspection GoUnhandledErrorResult
+	defer closeAndExhaustReader(resp.Body)
+
+	// Handling the response.
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("received non 200 response of %d for fasts export", resp.StatusCode)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read body of fasts export response: %s", err)
 	}
 
 	return string(body), nil

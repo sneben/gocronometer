@@ -3,10 +3,11 @@ package gocronometer_test
 import (
 	"context"
 	"fmt"
-	"github.com/sneben/gocronometer"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/sneben/gocronometer"
 )
 
 // setup perform some basic actions to setup testing.
@@ -263,4 +264,25 @@ func TestClient_ExportBiometricRecordsParsed(t *testing.T) {
 		t.Fatalf("failed to export bio: %s", err)
 	}
 
+}
+
+func TestClient_ExportFasts(t *testing.T) {
+	username, password, client, err := setup()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := client.Login(context.Background(), username, password); err != nil {
+		t.Fatalf("failed to login: %s", err)
+	}
+
+	defer client.Logout(context.Background())
+
+	startTime := time.Date(2021, 6, 1, 0, 0, 0, 0, time.Local)
+	endTime := time.Date(2021, 6, 10, 0, 0, 0, 0, time.Local)
+
+	_, err = client.ExportFasts(context.Background(), startTime, endTime)
+	if err != nil {
+		t.Fatalf("failed to export fasts: %s", err)
+	}
 }

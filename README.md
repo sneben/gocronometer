@@ -1,12 +1,14 @@
 # gocronometer
-gocronometer is an GPLv2 licensed Go module that provides a client for exporting data from 
+
+gocronometer is an GPLv2 licensed Go module that provides a client for exporting data from
 [Cronometer](https://cronometer.com). It utilizes the export features to retrieve the CSV data from the unpublished API.
 
-**NOTE:** This module utilizes the same API the SPA uses. For that reason it should only be used by single users wanting 
-to export their personal data for backup or other reasons. It should never be used for integrations that the enterprise 
+**NOTE:** This module utilizes the same API the SPA uses. For that reason it should only be used by single users wanting
+to export their personal data for backup or other reasons. It should never be used for integrations that the enterprise
 plan would cover. The library is licensed under the GPLv2 to help prevent the unacceptable usage.
 
 ## Basic Example
+
 ```go
 // Create the client.
 c := gocronometer.NewClient(nil)
@@ -34,12 +36,13 @@ fmt.Println(rawCSVData)
 |ExportServings()|Exports servings for the date range provided.|
 |ExportExercises()|Exports exercises for the date range provided.|
 |ExportBiometrics()|Exports biometrics for the date range provided.|
-|ExportNotes(|Exports notes for the date range provided.|
+|ExportNotes()|Exports notes for the date range provided.|
+|ExportFasts()|Exports fasting records for the date range provided.|
 
 ## API Magic Values
 
-This library mimics the GWT HTTP requests to perform the export of data. The GWT API exposed by Cronometer is not 
-designed to be accessed from anything besides their deployed GWT application. For that reason, there are several values 
+This library mimics the GWT HTTP requests to perform the export of data. The GWT API exposed by Cronometer is not
+designed to be accessed from anything besides their deployed GWT application. For that reason, there are several values
 that can only be obtained from loading the application itself. These values change over time with application updates,
 and the library must use those new values.
 
@@ -54,4 +57,3 @@ the ClientOptions parameter of the NewClient function.
 |GWTModuleBase|Retrieve from request header.|false|
 |GWTPermutation|Retrieve from request header.|true|
 |GWTHeader|Retrieve from GWT request body.|true|
-
