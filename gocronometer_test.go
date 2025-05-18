@@ -3,7 +3,7 @@ package gocronometer_test
 import (
 	"context"
 	"fmt"
-	"github.com/jrmycanady/gocronometer"
+	"github.com/sneben/gocronometer"
 	"os"
 	"testing"
 	"time"
